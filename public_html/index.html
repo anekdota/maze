@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Hedgehog</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    
+
+    <body>
+        <Div id="the_space"> 
+            <canvas id = "canvas" width = "350" height = "592"> 
+                Ez a szöveg jelenik meg, ha a böngésző nem támogatja a HTML5 canvast. 
+            </canvas> 
+        </div>
+        <script type="text/javascript">
+            var canvas;
+            var ctx;
+            var dx = 5;
+            var dy = 5;
+            var x = 200;
+            var y = 5;
+            var WIDTH = 350;             // magasság
+            var HEIGHT = 592;            // szélesség
+            var img = new Image();       // ide jön a térkép
+            var collision = 0;
+            var ido,start;
+            var a = 0;
+            
+            var direction_vertical=0; // = e.beta;
+            var direction_horizontal=0; // = e.gamma;
+            
+            function rect(x,y,w,h) {
+            ctx.beginPath();
+            ctx.rect(x,y,w,h);
+            ctx.closePath();
+            ctx.fill();
+            }
+
+            function clear() {
+            ctx.clearRect(0, 0, WIDTH, HEIGHT);
+                    ctx.drawImage(img, 0, 0);
+                }
+
+            function init() {
+                canvas = document.getElementById("canvas");
+                ctx = canvas.getContext("2d");
+                var kep=Math.floor((Math.random() * 3) + 1);
+                //img.src = "data/10.gif";                          //tesztkép
+                img.src = "data/0"+kep+".gif";                    // Itt A Kép !!!!!!
+                ido = new Date();
+                start = ido.getTime();
+                //return setInterval(draw, 1);
+                draw();
+            }
+                    
+            function handleOrientation(e) {
+                   
+                   direction_vertical = e.beta;
+                   direction_horizontal = e.gamma;
+            }
+            function lali() {       
+                   if(direction_vertical<-3){/* fel */
+                       if (y - dy > 0) {
+                                y -= dy;
+                                clear();
+                                checkcollision();
+                                if (collision == 1) {
+                                    y += dy;
+                                    collision = 0;
+                                }
+                            }
+                   }
+                   
+                   if(direction_vertical>3){/* le */
+                        if (y + dy < HEIGHT) {
+                                y += dy;
+                                clear();
+                                checkcollision();
+                                if (collision == 1) {
+                                    y -= dy;
+                                    collision = 0;
+                                }
+                            }
+                   }
+                   
+                   if(direction_horizontal>3){/* job */
+                       if ((x + dx < WIDTH)) {
+                                x += dx;
+                                clear();
+                                checkcollision();
+                                if (collision == 1) {
+                                    x -= dx;
+                                    collision = 0;
+                                }
+                            }
+                   }
+                   
+                   if(direction_horizontal<-3){/* bal */
+                       if (x - dx > 0) {
+                                x -= dx;
+                                clear();
+                                checkcollision();
+                                if (collision == 1) {
+                                    x += dx;
+                                    collision = 0;
+                                }
+                            }
+                   }
+                   setTimeout(lali,1);
+                   //lali();
+                }
+                //ütközésellenőrzés!
+                function checkcollision() {
+                    win();
+                    var imgd = ctx.getImageData(x, y, 15, 15);
+                    var pix = imgd.data;
+                    for (var i = 0; n = pix.length, i < n; i += 4) {
+                        if (pix[i] == 0) {
+                            collision = 1;
+                        }
+                    }
+                }
+
+                function draw() {
+                    //clear();
+                    ctx.fillStyle = "green";
+                    rect(x, y, 15, 15);
+                    requestAnimationFrame(draw);
+                }
+                
+                function win(){
+                    if(y>575){
+                        if(a<1){
+                            a++;
+                            var ido2 = new Date();
+                            var eredmeny = ido2.getTime();
+                            eredmeny = (eredmeny - start)/1000;
+                            //document.getElementById("the_space").innerHTML="Nyertél! Köridőd: "+eredmeny+"s";
+                            
+                            document.getElementById("the_space").innerHTML="";
+                            var h1=document.createElement("h1");
+                            h1.innerHTML="Nyertél! Köridőd: "+eredmeny+"s";
+                            document.getElementById("the_space").appendChild(h1); 
+                        }
+                    }    
+                }
+                init();
+                // document.getElementById("the_space").innerHTML="méret: "+screen.width+" "+screen.height; // képernyő mérete
+                window.addEventListener("deviceorientation", handleOrientation, true);  // FFOS-en
+                window.onload=function(){lali();}
+            
+        </script>
+
+    </body>
+
+</html>
